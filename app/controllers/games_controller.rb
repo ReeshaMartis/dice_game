@@ -29,7 +29,7 @@ class GamesController < ApplicationController
     end
 
     #game play
-    #post /games/:id/round
+    #post /games/:id/play
     def play
 
         game_id = params[:id]
@@ -42,7 +42,7 @@ class GamesController < ApplicationController
 
         gamedata = JSON.parse(stored,symbolize_names: true)
 
-
+        #game end condition
         if gamedata[:cur_round] >=5 || gamedata[:p1_wins] ==3 ||gamedata[:p2_wins] ==3
             if  gamedata[:p1_wins]>gamedata[:p2_wins]
                 game_winner = gamedata[:player1]
@@ -62,12 +62,10 @@ class GamesController < ApplicationController
             }
             return
         end
-
+        #game start
         p1_roll = rand(1..6)
         p2_roll = rand(1..6)
-
         winner = nil
-
 
         if p1_roll > p2_roll
             gamedata[:p1_wins]+=1
@@ -88,8 +86,8 @@ class GamesController < ApplicationController
                 winner: winner
         }
 
+        #results stored and rendered
         InMemoryStore.set(game_id,gamedata.to_json)
-
 
         render json: {
             round:gamedata[:cur_round] ,
