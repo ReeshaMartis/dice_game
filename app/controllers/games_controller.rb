@@ -99,16 +99,24 @@ class GamesController < ApplicationController
                 p2: gamedata[:p2_wins]
             }
         }
-
-      
-        
-
     end
 
 
-    # view current game score through redis
+    # view current game score through memory. (like redis)
     # get /games/:id
     def show
+        game_id = params[:id]
+        stored = InMemoryStore.get(game_id)
+
+        if stored.nil? 
+            render json: {msg: "game not found"}, status: :not_found
+            return
+        end
+
+        gamedata = JSON.parse(stored,symbolize_names: true)
+
+        render json: gamedata
+
     end
 
     # view history of games played - stored in DB
